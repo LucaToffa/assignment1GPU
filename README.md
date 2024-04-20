@@ -27,3 +27,33 @@ OPTFLAGS = -O0, -O3, -DDEBUG -DPRINT -DSIMPLE -DBLOCK -> python can mix and matc
 
 ### cachegrind output
 parsing and plotting the output of cachegrind may be a pain
+
+time to log all data from valgrind for 1 iter: 
+real    9m22,059s | real    9m25,435s at exp=14
+real    3m33,988s at exp=13
+real    1m10,592s at exp=12
+x50 iterations at 14 = ~8h
+x50 iterations at 13 = ~2.5h -> do this, but only x30
+so 30 iterations at 13 = ~1.5h
+
+before that check that that is the exact data i need
+
+exp 13 instead of 14 means 800 less data also 30 iterations instead of 50
+x-800 / 50 * 30 = y
+7704-800 / 50 * 30 = 4142,4
+
+!oops i need the data for -01 and -02 too
+
+### help with regex:
+https://regex101.com/
+
+### valgrind output
+for each iteration, output to 2 tmp files, append to same file regex and main_args, then delete tmp files 
+
+!!why 32 instead of 128?? range(1, 6) in valgrind tests
+
+
+
+--output of parsing coutput should include block=0 for simple transposition
+--output of parsing voutput should build the data size, block ,mrx4 directly
+vfiles can then be appended to cfiles from analyser, and then the whole file can be plotted
