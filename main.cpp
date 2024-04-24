@@ -3,13 +3,7 @@
 #include <ctime>
 
 #define DEFAULT_SIZE 4
-//#define DEBUG
-//#define PRINT 
 
-/*
-example of csv like output:
-opt, type, size, testiter, time 
-*/
 int initMatrix(int** mat, int size);
 int printMatrix(int** mat, int size);
 
@@ -28,10 +22,10 @@ int main(int argc, char* argv[]) {
     int N;
     int B;
     if(argc >= 2){
-        N = (int) pow(2,atoi(argv[1])); //what if is not an integer?
+        N = (1<<atoi(argv[1]));
         if(argc == 3) B = atoi(argv[2]);
     }else{
-        N = DEFAULT_SIZE; //deafult dimension
+        N = DEFAULT_SIZE; //default dimension
     }
 #ifdef DEBUG
     printf("Matrix size: %d, ", N);
