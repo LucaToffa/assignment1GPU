@@ -1,6 +1,7 @@
 .vscode/*
-build/*
 tests/*
 *.txt
 report_utils/
+
+*.o
 
