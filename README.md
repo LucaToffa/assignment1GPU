@@ -1,59 +1,105 @@
-# assignment1GPU
+# Matrix transposition exploration
+## Assignment 1 - GPU computing course 
 
-## Analisys of the posible cpeedup in cache usage for different matrix transposition algorithms
-## possible optimizations for matrix transposition algorithms in GPU
+An exploration of the possible speed-up and cache usage optimization for different matrix transposition algorithms (naive and block transposition) in C++.
 
-12|34    13|57
-34|56    24|68
------ -> -----
-56|78    35|79
-78|01    46|80
+### How to use
+This guide is meant for and the code is tested only for linux, 
+don't expect to run as is on windows / wsl / mac.
+#### Dependencies:
+- python3, mathplotlib, numpy
+- g++
+### Building the binaries
 
-transposed matrix is allocated and deallocated in the function, if a program wanted to use it, it could be allocated outside and passed as a parameter to the function, or inside the function and returned as a pointer to the transposed matrix.
+```
+make all
+```
+is equivalent to:
 
-the c program itself could log everydata to a file, and then the python script could read the file and plot the data.
+```
+make testsimple
+make testblock
+make analyser
+```
 
-the 2 versions of transposition algorithms should not run at the same time, as they would interfere with each other, the python script should run the c program twice, one for each algorithm.
+```
+make main
+```
+is mainly intended for tester.py to build and run each version of the code as needed.
+Of course it can be used by the end user manually
+```
+make main OPTFLAGS="-O3 -DDEBUG -DPRINT -DSIMPLE"
+```
+Using -DPRINT for large matrices is not suggested as printing that much data in the terminal is not that useful
 
-also trying with O0 and 03 optimization levels
+While -DDEBUG has just more verbose logs 
 
-OPTFLAGS = -O0, -O3, -DDEBUG -DPRINT -DSIMPLE -DBLOCK -> python can mix and match calls to make
+### Running the code
+```shell
+./testblock <mat_size_exp, block_size>
+./testsimple <mat_size_exp>
+```
+These programs have the DEBUG flag enabled.
+
+The first argument is the exponent e to make a matrix of 2^e rows and columns, 
+for the code to complete succesfully it should not exceed the machine memory capability
+
+```
+./testsimple 15 will allocate 8GB of ram
+```
+
+The second is the size of the blocks the matrix will be divided into for block-transposition
+B = block_size x block_size
+
+**N.B. block_size should always be a power of two (the algorithm can't work otherwise, and the code will segfault)**
+
+For safetly of the machine and timing contraint tester.py will test up to **<13, 128>**
+
+```
+python3 tester.py <iterations>
+```
+If the needed library are installed on the machine running this command (the argument iteration determines the number of time each matrix will be run and timed) should be enough.
+
+Running this script will clear all logs already in the logs folder, and it will take some time to complete
+
+(For reference, a single iteration may take some minutes)
+
+coutput-Ox.log files refer to the timing of main,
+while foutput-Ox.log files refer to the simplified "final" output of valgrind, the program that performs all the cache miss analysis. 
+
+
+```
+./analyser
+```
+this program will extract data from the output files that tester.py generated.
+The resulting timing and bandwidth can then be plotted with plotter.py
+
+the files (one per optimization level) have this format:
+```shell
+#bandwidths
+    <mat_size>, <block_size>, <ext_bandwidth>
+#timings
+    <mat_size>, <block_size>, <avg_time>, <min_time>, <max_time>
+#foutuputs
+    <mat_size>, <block_size>, <I1mr>,<LLimr>, <D1mr>, <LLdmr>, <LLmr>
+
+```
+
+finally the plotter.py will generate the plots in the plots folder,
+there are many plots that can be generated, custom ones can be added by modifying the script
+
+
 ### valgrind usage
- valgrind --tool=cachegrind ./sum 10
- valgrind --leak-check=yes myprog arg1 arg2
- --main-stacksize=83886080 ;more stack flag in valgrind
- valgrind --log-file="filename" ./my_program < 1.in && cat filename ; log file flag
- valgrind --tool=cachegrind --log-fd=9 9>>test.log ./main 7 ;append log instead of just writing it
 
-### cachegrind output
-parsing and plotting the output of cachegrind may be a pain
+#### some examples to get you started with valgrind and understand the code
+```shell
+ valgrind --tool=cachegrind ./main 10 #basic usage, run a program and generate a cachegrind report
+ valgrind --tool=cachegrind --log-fd=9 9>>test.log ./main 7 #send output to file descriptor 9 and append to log file
+```
 
-time to log all data from valgrind for 1 iter: 
-real    9m22,059s | real    9m25,435s at exp=14
-real    3m33,988s at exp=13
-real    1m10,592s at exp=12
-x50 iterations at 14 = ~8h
-x50 iterations at 13 = ~2.5h -> do this, but only x30
-so 30 iterations at 13 = ~1.5h
-
-before that check that that is the exact data i need
-
-exp 13 instead of 14 means 800 less data also 30 iterations instead of 50
-x-800 / 50 * 30 = y
-7704-800 / 50 * 30 = 4142,4
-
-!oops i need the data for -01 and -02 too
-
-### help with regex:
-https://regex101.com/
-
-### valgrind output
-for each iteration, output to 2 tmp files, append to same file regex and main_args, then delete tmp files 
-
-!!why 32 instead of 128?? range(1, 6) in valgrind tests
-
-
-
---output of parsing coutput should include block=0 for simple transposition
---output of parsing voutput should build the data size, block ,mrx4 directly
-vfiles can then be appended to cfiles from analyser, and then the whole file can be plotted
+The Makefile itself provides a simple way to try valgrind with the code and cleanup afterwords
+```shell
+make valgrind_simple ARGS="10" #run valgrind with the simple version of the code and a matrix of size 2^10
+make valgrind_block ARGS="10 4" #run valgrind with the block version of the code and a matrix of size 2^10 divided in 4x4 blocks
+make clear_valgrind #clear the valgrind output files
+``` 

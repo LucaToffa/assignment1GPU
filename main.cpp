@@ -115,8 +115,8 @@ int BlockTraspose(int** mat, int size, int blocks){
 
     int blockSize = blocks;
     if(blockSize < 1 || blockSize > size) blockSize = 1;
+    
     double start = clock();
-    //block transpose 
     for(int i = 0; i < size; i+=blockSize){
         for(int j = 0; j < size; j+=blockSize){
             for(int k = i; k < i+blockSize; k++){

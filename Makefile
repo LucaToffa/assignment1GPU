@@ -1,6 +1,6 @@
 CC = g++
 CPPFLAGS = -g -std=c++11
-BINS = main testsimple testblock analyser
+BINS = testsimple testblock analyser
 
 all: $(BINS)
 

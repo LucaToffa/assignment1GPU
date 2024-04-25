@@ -7,15 +7,39 @@ get info from logs to be displayed by python
 #include <limits.h>
 #include <string.h>
 
-// read timing logs
-// size time blocks
-int readTimingLogs(const char* cinput, const char* coutput){
+// read timing logs and determine average, min, max and troughput
+
+char inputs[4][256] = {"logs/coutput-O0.log", "logs/coutput-O1.log", "logs/coutput-O2.log", "logs/coutput-O3.log"};
+char outputs[4][256] = {"logs/timings-O0.log", "logs/timings-O1.log", "logs/timings-O2.log", "logs/timings-O3.log"};
+char bw_out[4][256] = {"logs/bandwidths-O0.log", "logs/bandwidths-O1.log", "logs/bandwidths-O2.log", "logs/bandwidths-O3.log"};
+
+int readTimingLogs(const char* cinput, const char* coutput, const char* output_bw);
+int calcBandwidth(int size, int blocks, float time, const char* output_bw);
+
+int main(int argc, char* argv[]) {
+    for(int i = 0; i < 4; i++){
+        FILE* bw_file = fopen(bw_out[i], "w");
+        if(bw_file == NULL){
+            printf("Error opening BW file\n");
+            return 1;
+        }
+        fclose(bw_file);
+        readTimingLogs(inputs[i], outputs[i], bw_out[i]);
+    }
+    return 0;
+}
+
+int readTimingLogs(const char* cinput, const char* coutput, const char* output_bw){
     FILE* readFile = fopen(cinput, "r");
     if(readFile == NULL){
-        printf("Error opening file\n");
+        printf("Error opening input file\n");
         return 1;
     }
     FILE* writeFile = fopen(coutput, "w"); //write from the beginning
+    if(writeFile == NULL){
+        printf("Error opening output file\n");
+        return 2;
+    }
     char line[256];
     int curr_size, curr_blocks = 0;
     int prev_size = 0; 
@@ -27,9 +51,9 @@ int readTimingLogs(const char* cinput, const char* coutput){
     float max_time = 0;
     int iter = 0;
     while(fgets(line, sizeof(line), readFile)){
-        if(line[0] == 's'){ 
-            continue;
-        }
+        // if(line[0] == 's'){ 
+        //     continue;
+        // }
         sscanf(line, "%d, %f, %d", &curr_size, &curr_time, &curr_blocks);
 
         //if done with current size block combination
@@ -40,7 +64,7 @@ int readTimingLogs(const char* cinput, const char* coutput){
                 avg_time = total_time / iter;
             }
             fprintf(writeFile, "%d, %d, %f, %f, %f\n", prev_size, prev_blocks, avg_time, min_time, max_time);
-    
+            calcBandwidth(prev_size, prev_blocks, avg_time, output_bw);
             // reset values
             iter = 0;
             total_time = 0;
@@ -61,18 +85,22 @@ int readTimingLogs(const char* cinput, const char* coutput){
         }
         iter++;    
     }
-    //print last iteration 
+    //print last iteration to file
     fprintf(writeFile, "%d, %d, %f, %f, %f\n", prev_size, prev_blocks, avg_time, min_time, max_time);
-            
+    calcBandwidth(prev_size, prev_blocks, avg_time, output_bw);        
     fclose(readFile);
     fclose(writeFile);
     return 0;
 }
 
-int main(int argc, char* argv[]) {
-    readTimingLogs("logs/coutput-O0.log", "logs/timings-O0.log");
-    readTimingLogs("logs/coutput-O1.log", "logs/timings-O1.log");
-    readTimingLogs("logs/coutput-O2.log", "logs/timings-O2.log");
-    readTimingLogs("logs/coutput-O3.log", "logs/timings-O3.log");
+int calcBandwidth(int size,int blocks, float time, const char* output_bw){
+    FILE* bw_file = fopen(output_bw, "a");
+    if(bw_file == NULL){
+        printf("Error opening BW file\n");
+        return 1;
+    }
+    float eff_bw =  ( 2*( size*size*sizeof(int)*sizeof(int) )/ time) / 1000000000.0;
+    fprintf(bw_file, "%d, %d, %f\n", size, blocks, eff_bw);
+    fclose(bw_file);
     return 0;
 }
