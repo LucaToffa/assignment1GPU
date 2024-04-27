@@ -1,6 +1,3 @@
-#run ./main many times and log the output
-#run this script to check if the output is correct
-
 import os
 import sys
 import re
@@ -36,8 +33,7 @@ def testValgrindSimple(opt):
         voutput_log = "logs/voutput" + opt +".log"
         cmd = "valgrind --tool=cachegrind --log-fd=9 9>>" + voutput_log + " ./main " + str(i+1) + " > /dev/null"
         os.system(cmd)
-        readOutput(1<<(i+1), 0, opt) #get rid of all the useless lines
-        #delete the cachegrind.out and valgrind files
+        readOutput(1<<(i+1), 0, opt)
         cmd = "rm cachegrind.out* "+ voutput_log
         os.system(cmd)
     print("testValgrindSimple Done")
@@ -50,8 +46,7 @@ def testValgrindBlock(opt):
                 voutput_log = "logs/voutput" + opt +".log"
                 cmd = "valgrind --tool=cachegrind --log-fd=9 9>>" + voutput_log + " ./main " + prog_input  + " > /dev/null"
                 os.system(cmd)
-                readOutput(1<<(i+1), 1<<bsize, opt) #get rid of all the useless lines
-                #delete the cachegrind.out and valgrind files
+                readOutput(1<<(i+1), 1<<bsize, opt) 
                 cmd = "rm cachegrind.out* "+ voutput_log
                 os.system(cmd)
     print("testValgrindBlock Done")

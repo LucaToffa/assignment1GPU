@@ -2,7 +2,7 @@ CC = g++
 CPPFLAGS = -g -std=c++11
 BINS = testsimple testblock analyser
 
-all: $(BINS)
+all: setup clean $(BINS)
 
 main: main.o
 	$(CC) $(CPPFLAGS) $(OPTFLAGS) build/main.o -o main
@@ -24,6 +24,10 @@ valgrind_simple: testsimple
 valgrind_block: testblock
 	valgrind --tool=cachegrind ./testblock $(ARGS)
 
+setup:
+	mkdir -p build
+	mkdir -p logs
+	mkdir -p plots
 
 clearvalgrind:
 	rm -rf cachegrind.*

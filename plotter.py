@@ -56,10 +56,10 @@ def openfile():
     #plt.legend()
     plt.show()   
 
-def plotTotCacheMiss(): #4
+def plotD1CacheMiss(): #4
     # B mrx N <= N, B, I1mr, LLimr, D1mr, LLdmr, LLmr
     iter = 0
-    outputs = ["totCacheMiss-O0.png", "totCacheMiss-O1.png", "totCacheMiss-O2.png", "totCacheMiss-O3.png"]
+    outputs = ["d1CacheMiss-O0.png", "d1CacheMiss-O1.png", "d1CacheMiss-O2.png", "d1CacheMiss-O3.png"]
     for file in ["foutput-O0.log", "foutput-O1.log", "foutput-O2.log", "foutput-O3.log"]:
         with open(input_prefix + file, "r") as dataset:
             datalist  = [line.split(', ') for line in dataset.readlines()]
@@ -76,7 +76,35 @@ def plotTotCacheMiss(): #4
             #add this line to the legend
             plt.plot(x, y, label=str(data[0]))
         plt.xlabel('Block Size')
-        plt.ylabel('Total Cache Misses')
+        plt.ylabel('D1 Cache Miss Rate')
+        plt.title('Benchmark times for block matrices')
+        plt.grid(True)
+        plt.legend()
+        plt.savefig(output_prefix + outputs[iter])
+        iter = iter + 1
+        plt.show() 
+
+def plotDllCacheMiss(): #11
+    # B mrx N <= N, B, I1mr, LLimr, D1mr, LLdmr, LLmr
+    iter = 0
+    outputs = ["dllCacheMiss-O0.png", "dllCacheMiss-O1.png", "dllCacheMiss-O2.png", "dllCacheMiss-O3.png"]
+    for file in ["foutput-O0.log", "foutput-O1.log", "foutput-O2.log", "foutput-O3.log"]:
+        with open(input_prefix + file, "r") as dataset:
+            datalist  = [line.split(', ') for line in dataset.readlines()]
+
+        for i in range(2, MAX_ESP):#datalist: #this is wrong, need to fix
+            #while data[1] does not change from previous value, keep adding to the list
+            data = datalist[i]
+            x = []
+            y = []
+            for j in range(len(datalist)):
+                if(data[0] == datalist[j][0]):
+                    x.append(datalist[j][1])
+                    y.append(float(datalist[j][5]))
+            #add this line to the legend
+            plt.plot(x, y, label=str(data[0]))
+        plt.xlabel('Block Size')
+        plt.ylabel('Dll Cache Miss Rate')
         plt.title('Benchmark times for block matrices')
         plt.grid(True)
         plt.legend()
@@ -219,7 +247,7 @@ def plotBlockCacheMisses(): #5
         y3 = []
         y4 = []
         for i in range(len(datalist)):
-                if(int(datalist[i][0]) == 8192):
+                if(int(datalist[i][0]) == 64):
                     x.append(datalist[i][1])
                     y1.append(float(datalist[i][2]))
                     y2.append(float(datalist[i][3]))
@@ -252,7 +280,7 @@ def plotSimpleCacheMiss(): #2
         y3 = []
         y4 = []
         for i in range(len(datalist)):
-                if(datalist[i][1] == '0' and int(datalist[i][0]) < 1024 and int(datalist[i][0]) > 4):
+                if(datalist[i][1] == '0'): # and int(datalist[i][0]) < 1024 and int(datalist[i][0]) > 4
                     x.append(datalist[i][0])
                     y1.append(float(datalist[i][2]))
                     y2.append(float(datalist[i][3]))
@@ -350,7 +378,7 @@ def plotsimpletimelog(): #10
                 y_err.append((float(data[4]) - float(data[3]) + 0.000001) / 2 / math.sqrt(float(data[0])))
         plt.yscale('log')
         plt.plot(x, y, label=file)
-    plt.errorbar(x, y, yerr=y_err, fmt='o', elinewidth=2, alpha=0.8)
+        plt.errorbar(x, y, yerr=y_err, fmt='o', elinewidth=2, alpha=0.8)
     plt.xlabel('Matrix Size')
     plt.ylabel('Time (seconds)')
     plt.title('Benchmark times for simple matxices')
@@ -372,13 +400,13 @@ def plotsimpletime(): #1 this is the shape for simple/time data
         y = []
         y_err = []
         for data in datalist:
-            if(data[1] == '0' and int(data[0])< 1024):
+            if(data[1] == '0' and int(data[0]) <= 8192):
                 x.append(data[0])
                 y.append(float(data[2]))
                 y_err.append((float(data[4]) - float(data[3]) + 0.000001) / 2 / math.sqrt(float(data[0])))
         plt.yscale('linear')
         plt.plot(x, y, label=file)
-    plt.errorbar(x, y, yerr=y_err, fmt='o', elinewidth=2, alpha=0.8)
+        plt.errorbar(x, y, yerr=y_err, fmt='o', elinewidth=2, alpha=0.8)
     plt.xlabel('Matrix Size')
     plt.ylabel('Time (seconds)')
     plt.title('Benchmark times for simple matxices')
@@ -399,14 +427,15 @@ def errplot():
     plt.show()
 
 if __name__ == "__main__":
-    # plotsimpletime() #1
-    # plotsimpletimelog() #10
-    # plotblocktime() #3 
-    # plotSimpleCacheMiss() #2
-    # plotBlockCacheMisses() #5
-    # plotTotCacheMiss() #4
-    # plotSimpleBandwidth() #6
-    #plotBlockBandwidth() #7
+    plotsimpletime() #1
+    plotsimpletimelog() #10
+    plotblocktime() #3 
+    plotSimpleCacheMiss() #2
+    plotBlockCacheMisses() #5
+    plotD1CacheMiss() #4
+    plotDllCacheMiss() #11
+    plotSimpleBandwidth() #6
+    plotBlockBandwidth() #7
     plotBWspace() #8
-    # plotblocktimeNormalized() #9
+    plotblocktimeNormalized() #9
     print("Done")

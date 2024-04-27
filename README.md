@@ -3,7 +3,7 @@
 
 An exploration of the possible speed-up and cache usage optimization for different matrix transposition algorithms (naive and block transposition) in C++.
 
-### How to use
+### Disclaimer
 This guide is meant for and the code is tested only for linux, 
 don't expect to run as is on windows / wsl / mac.
 #### Dependencies:
@@ -14,22 +14,15 @@ don't expect to run as is on windows / wsl / mac.
 - valgrind (sudo apt install valgrind for ubuntu derivatives)
 Command may slightly vary depending on the distribution
 ### Building the binaries
-
+First of all run:
 ```
 make all
 ```
-is equivalent to:
-
-```
-make testsimple
-make testblock
-make analyser
-```
-
+it will add needed folders and build the binaries for playing with the code (testsimple, testblock, analyser) except main, which is built with the following command
 ```
 make main
 ```
-is mainly intended for tester.py to build and run each version of the code as needed.
+is intended for tester.py to build and run each version of the code as needed.
 Of course it can be used by the end user manually
 ```
 make main OPTFLAGS="-O3 -DDEBUG -DPRINT -DSIMPLE"
@@ -77,7 +70,7 @@ while foutput-Ox.log files refer to the simplified "final" output of valgrind, t
 ./analyser
 ```
 this program will extract data from the output files that tester.py generated.
-The resulting timing and bandwidth can then be plotted with plotter.py
+The resulting timing and bandwidth logs can then be plotted with plotter.py
 
 the files (one per optimization level) have this format:
 ```shell
@@ -91,8 +84,9 @@ the files (one per optimization level) have this format:
 ```
 
 finally the plotter.py will generate the plots in the plots folder,
-there are many plots that can be generated, custom ones can be added by modifying the script
-
+there are many plots that can be generated, custom ones can be added by modifying the script (adding new plotting functions).
+By default all the plots present in plots/ will be regenerated, to avoid it just comment the function calls. 
+The scripts also uses the variables input_prefix and output_prefix, changing them will change the input and output folders respectively.
 
 ### valgrind usage
 
