@@ -7,8 +7,8 @@
 int initMatrix(int** mat, int size);
 int printMatrix(int** mat, int size);
 
-int SimpleTraspose(int** mat, int size);
-int BlockTraspose(int** mat, int size, int blocks = 1);
+int Simpletranspose(int** mat, int size);
+int Blocktranspose(int** mat, int size, int blocks = 1);
 
 int main(int argc, char* argv[]) {
 #ifdef DEBUG
@@ -41,10 +41,10 @@ int main(int argc, char* argv[]) {
     printMatrix(mat, N);
 
 #ifdef SIMPLE
-    SimpleTraspose(mat, N);
+    Simpletranspose(mat, N);
 #endif
 #ifdef BLOCK
-    BlockTraspose(mat, N, B);
+    Blocktranspose(mat, N, B);
 #endif
 
     for(int i = 0; i < N; i++){
@@ -78,39 +78,39 @@ int printMatrix(int** mat, int size){
     return 0;
 }
 
-int SimpleTraspose(int** mat, int size){
-    int** trasposed = (int**) malloc(size * sizeof(int*));
+int Simpletranspose(int** mat, int size){
+    int** transposed = (int**) malloc(size * sizeof(int*));
     for(int i = 0; i < size; i++){
-        trasposed[i] = (int*) malloc(size * sizeof(int));
+        transposed[i] = (int*) malloc(size * sizeof(int));
     }
 
     double start = clock();
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
-            trasposed[j][i] = mat[i][j];
+            transposed[j][i] = mat[i][j];
         }
     }
     double end = clock(); 
 #ifdef DEBUG
-    printf("Simple traspose time: %f", (double)(end - start) / CLOCKS_PER_SEC);
+    printf("Simple transpose time: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
 #else
     printf("%f", (double)(end - start) / CLOCKS_PER_SEC);
 #endif
-    printMatrix(trasposed, size);
+    printMatrix(transposed, size);
 
 
     for(int i = 0; i < size; i++){
-        free(trasposed[i]);
+        free(transposed[i]);
     } 
-    free(trasposed);
+    free(transposed);
 
     return 0;
 }
 
-int BlockTraspose(int** mat, int size, int blocks){
-    int** trasposed = (int**) malloc(size * sizeof(int*));
+int Blocktranspose(int** mat, int size, int blocks){
+    int** transposed = (int**) malloc(size * sizeof(int*));
     for(int i = 0; i < size; i++){
-        trasposed[i] = (int*) malloc(size * sizeof(int));
+        transposed[i] = (int*) malloc(size * sizeof(int));
     }
 
     int blockSize = blocks;
@@ -121,23 +121,23 @@ int BlockTraspose(int** mat, int size, int blocks){
         for(int j = 0; j < size; j+=blockSize){
             for(int k = i; k < i+blockSize; k++){
                 for(int l = j; l < j+blockSize; l++){
-                    trasposed[l][k] = mat[k][l];
+                    transposed[l][k] = mat[k][l];
                 }
             }
         }
     }
     double end = clock();
 #ifdef DEBUG
-    printf("Block traspose time: %f, ", (double)(end - start) / CLOCKS_PER_SEC);
-    printf("Block size: %d", blockSize); //down here for log legibility
+    printf("Block transpose time: %f, ", (double)(end - start) / CLOCKS_PER_SEC);
+    printf("Block size: %d\n", blockSize); //down here for log legibility
 #else
     printf("%f, %d", (double)(end - start) / CLOCKS_PER_SEC, blockSize);
 #endif
-    printMatrix(trasposed, size);
+    printMatrix(transposed, size);
 
     for(int i = 0; i < size; i++){
-        free(trasposed[i]);
+        free(transposed[i]);
     } 
-    free(trasposed);
+    free(transposed);
     return 0;
 }

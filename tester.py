@@ -57,7 +57,7 @@ def testValgrindBlock(opt):
     print("testValgrindBlock Done")
 
 def make(flags):
-    cmd = "make OPTFLAGS=\"" + flags + "\" all"
+    cmd = "make OPTFLAGS=\"" + flags + "\" main"
     print(cmd)
     os.system(cmd)
     

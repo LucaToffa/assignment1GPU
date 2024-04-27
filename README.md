@@ -8,7 +8,11 @@ This guide is meant for and the code is tested only for linux,
 don't expect to run as is on windows / wsl / mac.
 #### Dependencies:
 - python3, mathplotlib, numpy
-- g++
+    python3 -m pip install -U pip
+    python3 -m pip install -U matplotlib numpy
+- g++ (sudo apt install build-essential make)
+- valgrind (sudo apt install valgrind for ubuntu derivatives)
+Command may slightly vary depending on the distribution
 ### Building the binaries
 
 ```
@@ -59,10 +63,11 @@ For safetly of the machine and timing contraint tester.py will test up to **<13,
 python3 tester.py <iterations>
 ```
 If the needed library are installed on the machine running this command (the argument iteration determines the number of time each matrix will be run and timed) should be enough.
+Considering that the cache miss percentages coming from valgrind were not sensitive to the number of iterations, and that using valgrind is time consuming, there is only one iteration over each configuration using valgrind.
 
 Running this script will clear all logs already in the logs folder, and it will take some time to complete
 
-(For reference, a single iteration may take some minutes)
+(For reference, a single iteration of tester as is may even take some minutes)
 
 coutput-Ox.log files refer to the timing of main,
 while foutput-Ox.log files refer to the simplified "final" output of valgrind, the program that performs all the cache miss analysis. 

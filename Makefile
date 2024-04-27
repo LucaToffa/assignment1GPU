@@ -15,7 +15,7 @@ testblock: main.cpp
 	$(CC) $(CPPFLAGS) -O0 -DDEBUG -DBLOCK main.cpp -o testblock
 build: main.cpp
 	$(CC) $(CPPFLAGS) -O0 -DPRINT -DSIMPLE -DDEBUG main.cpp -o main
-analyser: analyser.cpp
+analyser: analyser.cpp	
 	$(CC) $(CPPFLAGS) analyser.cpp -o analyser
 
 
@@ -30,4 +30,4 @@ clearvalgrind:
 
 clean:
 	rm -rf build/* \
-	rm *.o $(BINS) cachegrind.* *.log
+	rm *.o $(BINS) main cachegrind.* *.log

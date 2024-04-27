@@ -115,7 +115,7 @@ def plotBWspace(): #8
     for file in ["bandwidths-O0.log", "bandwidths-O1.log", "bandwidths-O2.log", "bandwidths-O3.log"]:
         with open(input_prefix + file, "r") as dataset:
             size = ['2', '4', '8', '16', '32', '64', '128', '256', '512', '1024', '2048', '4096', '8192']
-            block = ['0', '1', '2', '4', '8', '16', '32', '64', '128']
+            block = ['0', '2', '4', '8', '16', '32', '64', '128']
             z = [[-1] * len(block) for _ in range(len(size))]
             for line in dataset:
                 values = line.strip().split(', ')
@@ -126,9 +126,8 @@ def plotBWspace(): #8
                 size_pow = int(math.log2(size_in) - 1) #zero index = size 2
                 if(block_in == 0):
                     block_pow = 0
-                    z[size_pow][1] = val
                 else:
-                    block_pow = int(math.log2(block_in) + 1)
+                    block_pow = int(math.log2(block_in))
 
                 z[size_pow][block_pow] = val
 
@@ -161,36 +160,39 @@ def plotBlockBandwidth(): #7
     # N BW <= N, B, 0.00
     iter = 0
     output = "blockBandwidths.png"
-    for file in ["bandwidths-O0.log", "bandwidths-O1.log", "bandwidths-O2.log", "bandwidths-O3.log"]:
+    for file in ["bandwidths-O0.log",
+                 "bandwidths-O1.log",
+                 "bandwidths-O2.log",
+                 "bandwidths-O3.log"]:
         with open(input_prefix + file, "r") as dataset:
             datalist  = [line.split(', ') for line in dataset.readlines()]
+            # x = []
+            # y = []
+
+            # for j in range(len(datalist)):
+            #     #for i in range(len(datalist)):
+            #     if(int(datalist[j][0]) == 4096):
+            #         x.append(datalist[j][1])
+            #         y.append(float(datalist[j][2]))
+            # plt.plot(x, y, label=file + " 4096")
+
+            # x = []
+            # y = []
+            # for j in range(len(datalist)):
+            #     #for i in range(len(datalist)):
+            #     if(int(datalist[j][0]) == 128):
+            #         x.append(datalist[j][1])
+            #         y.append(float(datalist[j][2]))
+            # plt.plot(x, y, label=file + " 128")
+        
             x = []
             y = []
-
             for j in range(len(datalist)):
                 #for i in range(len(datalist)):
-                if(int(datalist[j][0]) == 4096):
+                if(int(datalist[j][0]) == 256):
                     x.append(datalist[j][1])
                     y.append(float(datalist[j][2]))
-            plt.plot(x, y, label=file + " 4096")
-
-            # x = []
-            # y = []
-            # for j in range(len(datalist)):
-            #     #for i in range(len(datalist)):
-            #     if(int(datalist[j][0]) == 512):
-            #         x.append(datalist[j][1])
-            #         y.append(float(datalist[j][2]))
-            # plt.plot(x, y, label=file + " 512")
-        
-            # x = []
-            # y = []
-            # for j in range(len(datalist)):
-            #     #for i in range(len(datalist)):
-            #     if(int(datalist[j][0]) == 16):
-            #         x.append(datalist[j][1])
-            #         y.append(float(datalist[j][2]))
-            # plt.plot(x, y, label=file + " 16")
+            plt.plot(x, y, label=file + " 256")
 
     plt.xlabel('Block Size')
     plt.ylabel('Bandwidth')
@@ -211,15 +213,6 @@ def plotBlockCacheMisses(): #5
             #check if line starts with a number
             datalist  = [line.split(', ') for line in dataset.readlines()]
             
-        #convert list of strings to list of floats
-        # for i in range(len(datalist)):
-        #     datalist[i] = [float(j) for j in datalist[i]]
-        #     datalist[i][0] = str(datalist[i][0])
-
-        #for data in datalist:
-        #for d in range(2):#datalist: #this is wrong, need to fix
-            #while data[1] does not change from previous value, keep adding to the list
-        #data = datalist[d]
         x = []
         y1 = []
         y2 = []
@@ -252,7 +245,6 @@ def plotSimpleCacheMiss(): #2
     outputs = ["simpleCacheMisses-O0.png", "simpleCacheMisses-O1.png", "simpleCacheMisses-O2.png", "simpleCacheMisses-O3.png"]
     for file in ["foutput-O0.log", "foutput-O1.log", "foutput-O2.log", "foutput-O3.log"]:
         with open(input_prefix + file, "r") as dataset:
-            #check if line starts with a number
             datalist  = [line.split(', ') for line in dataset.readlines()]
         x = []
         y1 = []
@@ -293,7 +285,7 @@ def plotblocktimeNormalized(): #9
             y = []
             y_err = []
             for data in datalist:
-                if(data[0] == datalist[i][0] ): #and data[1] != '0'
+                if(data[0] == datalist[i][0] ):
                         x.append(data[1])
                         y.append(float(data[2]) * ((MAX_ESP-i)**2))
                         y_err.append((float(data[4]) - float(data[3]) + 0.000001) / 2 / math.sqrt(float(data[0])))
@@ -319,12 +311,11 @@ def plotblocktime(): #3
             datalist  = [line.split(', ') for line in dataset.readlines()]
 
         for i in range(MAX_ESP):
-            #while data[1] does not change from previous value, keep adding to the list
             x = []
             y = []
             y_err = []
             for data in datalist:
-                if(data[0] == datalist[i][0] ): #and data[1] != '0'
+                if(data[0] == datalist[i][0] ):
                         x.append(data[1])
                         y.append(float(data[2]))
                         y_err.append((float(data[4]) - float(data[3]) + 0.000001) / 2 / math.sqrt(float(data[0])))
@@ -347,7 +338,6 @@ def plotsimpletimelog(): #10
     output = "simpletimelog.png"
     for file in ["timings-O0.log", "timings-O1.log", "timings-O2.log", "timings-O3.log"]:
         with open(input_prefix + file, "r") as dataset:
-            #check if line starts with a number
             datalist  = [line.split(', ') for line in dataset.readlines()]
 
         x = []
@@ -409,14 +399,14 @@ def errplot():
     plt.show()
 
 if __name__ == "__main__":
-    #plotsimpletime() #1
-    plotsimpletimelog() #10
+    # plotsimpletime() #1
+    # plotsimpletimelog() #10
     # plotblocktime() #3 
     # plotSimpleCacheMiss() #2
     # plotBlockCacheMisses() #5
     # plotTotCacheMiss() #4
     # plotSimpleBandwidth() #6
-    # plotBlockBandwidth() #7
-    # plotBWspace() #8
+    #plotBlockBandwidth() #7
+    plotBWspace() #8
     # plotblocktimeNormalized() #9
     print("Done")

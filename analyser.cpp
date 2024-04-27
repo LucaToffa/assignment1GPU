@@ -4,7 +4,6 @@ get info from logs to be displayed by python
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <string.h>
 
 // read timing logs and determine average, min, max and troughput
@@ -99,7 +98,7 @@ int calcBandwidth(int size,int blocks, float time, const char* output_bw){
         printf("Error opening BW file\n");
         return 1;
     }
-    float eff_bw =  ( 2*( size*size*sizeof(int)*sizeof(int) )/ time) / 1000000000.0;
+    float eff_bw =  ( 2 * (size*size*sizeof(int)) / time) / (float)(1024*1024*1024);
     fprintf(bw_file, "%d, %d, %f\n", size, blocks, eff_bw);
     fclose(bw_file);
     return 0;
