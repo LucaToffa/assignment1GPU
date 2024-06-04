@@ -400,7 +400,7 @@ def plotsimpletime(): #1 this is the shape for simple/time data
         y = []
         y_err = []
         for data in datalist:
-            if(data[1] == '0' and int(data[0]) <= 8192):
+            if(data[1] == '0' and int(data[0]) <= 1024): #8192
                 x.append(data[0])
                 y.append(float(data[2]))
                 y_err.append((float(data[4]) - float(data[3]) + 0.000001) / 2 / math.sqrt(float(data[0])))
@@ -428,14 +428,14 @@ def errplot():
 
 if __name__ == "__main__":
     plotsimpletime() #1
-    plotsimpletimelog() #10
-    plotblocktime() #3 
-    plotSimpleCacheMiss() #2
-    plotBlockCacheMisses() #5
-    plotD1CacheMiss() #4
-    plotDllCacheMiss() #11
-    plotSimpleBandwidth() #6
-    plotBlockBandwidth() #7
-    plotBWspace() #8
-    plotblocktimeNormalized() #9
+    # plotsimpletimelog() #10
+    # plotblocktime() #3 
+    # plotSimpleCacheMiss() #2
+    # plotBlockCacheMisses() #5
+    # plotD1CacheMiss() #4
+    # plotDllCacheMiss() #11
+    # plotSimpleBandwidth() #6
+    # plotBlockBandwidth() #7
+    # plotBWspace() #8
+    # plotblocktimeNormalized() #9
     print("Done")

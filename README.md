@@ -102,3 +102,72 @@ make valgrind_simple ARGS="10" #run valgrind with the simple version of the code
 make valgrind_block ARGS="10 4" #run valgrind with the block version of the code and a matrix of size 2^10 divided in 4x4 blocks
 make clear_valgrind #clear the valgrind output files
 ``` 
+
+
+# Matrix transposition exploration - GPU implementation
+## Assignment 2 - GPU computing course 
+Implementation of the matrix transposition algorithm on the GPU using CUDA.
+
+### Building the binaries
+make all has been updated to build transpose.cu too
+```shell
+make transpose T=$(VAL) B=$(VAL)
+```
+where T is the size of the tiles and B is the block rows.
+The valid values depend on the machine and the GPU, T determines the minumum size of the matrix that can be transposed, while B determines the number of rows that will be transposed in a single block.
+Also T can't be smaller than B, and both should be powers of 2, otherwise the code will not work correctly.
+Default values are 32 for T and 8 for B.
+DEBUG and PRINT can be enables by uncommenting the lines in the source code, but just like before PRINT is not suggested for large matrices and the DEBUG output will give a very long output.
+
+### Running the code
+on a local machine
+```shell
+make cuda_run #to test all the matrix sizes on the default T and B
+make cuda_run N=$(VAL) #to test a specific matrix size
+make cuda_run T=$(VAL) B=$(VAL) N=$(VAL) #optional change to T and B
+```
+where 2^N is the size of the matrix to be transposed, it should be a power of 2 and greater than 5 if T>32.
+The code will run the matrix transposition algorithm on the GPU and print the timing and bandwidth of the operation.
+To store the output in a file the following command has been used
+```shell
+make cuda_run N=$(VAL) > logs2/outputall.log
+```
+on the cluster 
+```shell
+load module cuda
+make transpose
+sbatch query.sh #the current file does not take parameters bacause its for automated testing
+squeue -u $USER #check for running/pending jobs
+scancel <job_id> #remove job from queue
+```
+
+### Profiling the code
+To profile the space of possibilities a simple bash script compiles and launches the code, given the asynvhronous nature of the GPU the code will compile with different names. 
+```shell
+chmod +x tasklocal.sh #make the script executable
+bash ./tasklocal.sh
+```
+
+On the cluster the script is slightly different, it will launch a job for each T-B combination
+each output will be stored in a different file <output-%j.log>
+the plotter is sensible to the order or the files, so they need to be concatenated in the correct order, that should be the same as the jobs that were launched.
+```shell
+chmod +x tasks.sh #make the script executable
+bash ./tasks.sh #no do this manually
+cat <each> <output> <file> <in> <order> >> <finaloutput> # finaloutput = outputcluster.log in my case
+```
+
+
+### Nvidia profiler
+The nvidia visual profiler can be useful to get similar results for comparison,
+but it was not relied on considering the cluster interactions are through TUI.
+
+```shell
+# the profiler should be installed by default with the nvidia toolkit
+# install java if not already installed
+sudo apt install openjdk-8-jre
+nvvp # start the profiler
+```
+
+[for more info](https://docs.nvidia.com/cuda/profiler-users-guide/index.html)
+
